@@ -19,7 +19,7 @@ Now that you know what Django is for, we'll show you how to set up and test a Dj
     <tr>
       <th scope="row">Objective:</th>
       <td>
-        To have a development environment for Django (4.*) running on your computer.
+        To have a development environment for Django (5.*) running on your computer.
       </td>
     </tr>
   </tbody>
@@ -63,7 +63,7 @@ In this article, we'll provide instructions for Windows, macOS, and Linux/Unix.
 You can use any Python version supported by your target Django release.
 For Django 5.0 the allowed versions are Python 3.10 to 3.12 (see [FAQ:Installation](https://docs.djangoproject.com/en/5.0/faq/install/#what-python-version-can-i-use-with-django)).
 
-The Django project _recommends_ (and "officially supports") using the newest available version of the supported Python release.
+The Django project _recommends_ (and "officially supports") using the newest available version of the supported Python release ([v3.13 at the time of this writing](https://devguide.python.org/versions/)).
 
 #### Where can we download Django?
 
@@ -214,164 +214,64 @@ py -3 -m pip list
 
 The instructions below show the platform specific commands as they work on more systems.
 
+## Python Version Manager
+
+Reasons here...
+
+- not windows: [pyenv](https://github.com/pyenv/pyenv)
+- windows: [pyenv-win](https://github.com/pyenv-win/pyenv-win)
+
 ## Using Django inside a Python virtual environment
 
-The libraries we'll use for creating our virtual environments are [virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/index.html) (Linux and macOS) and [virtualenvwrapper-win](https://pypi.org/project/virtualenvwrapper-win/) (Windows), which in turn both use the [virtualenv](https://virtualenv.pypa.io/en/latest/) tool. The wrapper tools creates a consistent interface for managing interfaces on all platforms.
+We will use the venv module included in Python.
 
-### Installing the virtual environment software
+1. Decide on a directory to store your virtual environments. I put mine in `~/dev/venv-all`.
+2. Create a new virtual environment in the directory you chose. I'm calling mine `django-mdn` to remind me that it's the venv I created for django, but specifically for use with the MDN django exercises.
 
-#### Ubuntu virtual environment setup
+   ```bash
+   python3 -m venv ~/dev/venv-all/django-mdn
+   ```
 
-After installing Python and pip you can install _virtualenvwrapper_ (which includes _virtualenv_). The official installation guide can be found [here](https://virtualenvwrapper.readthedocs.io/en/latest/install.html), or follow the instructions below.
+3. Activate the virtual environment.
 
-Install the tool using _pip3_:
+   - not windows:
 
-```bash
-sudo pip3 install virtualenvwrapper
-```
+     ```bash
+     source ~/dev/venv-all/django-mdn/bin/activate
+     ```
 
-Then add the following lines to the end of your shell startup file (this is a hidden file name **.bashrc** in your home directory). These set the location where the virtual environments should live, the location of your development project directories, and the location of the script installed with this package:
+   - windows:
 
-```bash
-export WORKON_HOME=$HOME/.virtualenvs
-export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
-export VIRTUALENVWRAPPER_VIRTUALENV_ARGS=' -p /usr/bin/python3 '
-export PROJECT_HOME=$HOME/Devel
-source /usr/local/bin/virtualenvwrapper.sh
-```
+     - PowerShell:
 
-> [!NOTE]
-> The `VIRTUALENVWRAPPER_PYTHON` and `VIRTUALENVWRAPPER_VIRTUALENV_ARGS` variables point to the normal installation location for Python 3, and `source /usr/local/bin/virtualenvwrapper.sh` points to the normal location of the `virtualenvwrapper.sh` script. If the _virtualenv_ doesn't work when you test it, one thing to check is that Python and the script are in the expected location (and then change the startup file appropriately).
->
-> You can find the correct locations for your system using the commands `which virtualenvwrapper.sh` and `which python3`.
+       ```bash
+       ~/dev/venv-all/django-mdn/Scripts/Activate.ps1
+       ```
 
-Then reload the startup file by running the following command in the terminal:
+       - If this fails, it's likely due to your current [execution policy configuration](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.5), in which case run this:
 
-```bash
-source ~/.bashrc
-```
+         ```bash
+         Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+         ```
 
-At this point you should see a bunch of scripts being run as shown below:
+     - Command Prompt:
 
-```bash
-virtualenvwrapper.user_scripts creating /home/ubuntu/.virtualenvs/premkproject
-virtualenvwrapper.user_scripts creating /home/ubuntu/.virtualenvs/postmkproject
-# …
-virtualenvwrapper.user_scripts creating /home/ubuntu/.virtualenvs/preactivate
-virtualenvwrapper.user_scripts creating /home/ubuntu/.virtualenvs/postactivate
-virtualenvwrapper.user_scripts creating /home/ubuntu/.virtualenvs/get_env_details
-```
-
-Now you can create a new virtual environment with the `mkvirtualenv` command.
-
-#### macOS virtual environment setup
-
-Setting up _virtualenvwrapper_ on macOS is almost exactly the same as on Ubuntu (again, you can follow the instructions from either the [official installation guide](https://virtualenvwrapper.readthedocs.io/en/latest/install.html) or below).
-
-Install _virtualenvwrapper_ (and bundling _virtualenv_) using _pip_ as shown.
-
-```bash
-sudo pip3 install virtualenvwrapper
-```
-
-Then add the following lines to the end of your shell startup file (these are the same lines as for Ubuntu).
-If you're using the _zsh shell_ then the startup file will be a hidden file named **.zshrc** in your home directory. If you're using the _bash shell_ then it will be a hidden file named **.bash_profile**. You may need to create the file if it does not yet exist.
-
-```bash
-export WORKON_HOME=$HOME/.virtualenvs
-export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
-export PROJECT_HOME=$HOME/Devel
-source /usr/local/bin/virtualenvwrapper.sh
-```
-
-> [!NOTE]
-> The `VIRTUALENVWRAPPER_PYTHON` variable points to the normal installation location for Python 3, and `source /usr/local/bin/virtualenvwrapper.sh` points to the normal location of the `virtualenvwrapper.sh` script. If the _virtualenv_ doesn't work when you test it, one thing to check is that Python and the script are in the expected location (and then change the startup file appropriately).
->
-> For example, one installation test on macOS ended up with the following lines being necessary in the startup file:
->
-> ```bash
-> export WORKON_HOME=$HOME/.virtualenvs
-> export VIRTUALENVWRAPPER_PYTHON=/Library/Frameworks/Python.framework/Versions/3.7/bin/python3
-> export PROJECT_HOME=$HOME/Devel
-> source /Library/Frameworks/Python.framework/Versions/3.7/bin/virtualenvwrapper.sh
-> ```
->
-> You can find the correct locations for your system using the commands `which virtualenvwrapper.sh` and `which python3`.
-
-Then reload the startup file by making the following call in the terminal:
-
-```bash
-source ~/.bash_profile
-```
-
-At this point, you may see a bunch of scripts being run (the same scripts as for the Ubuntu installation). You should now be able to create a new virtual environment with the `mkvirtualenv` command.
-
-> [!NOTE]
-> If you can't find the startup file to edit in the finder, you can also open this in the terminal using nano.
->
-> Assuming you're using bash, the commands look something like this:
->
-> ```bash
-> cd ~  # Navigate to my home directory
-> ls -la #List the content of the directory. You should see .bash_profile
-> nano .bash_profile # Open the file in the nano text editor, within the terminal
-> # Scroll to the end of the file, and copy in the lines above
-> # Use Ctrl+X to exit nano, choose Y to save the file.
-> ```
-
-#### Windows virtual environment setup
-
-Installing [virtualenvwrapper-win](https://pypi.org/project/virtualenvwrapper-win/) is even simpler than setting up _virtualenvwrapper_ because you don't need to configure where the tool stores virtual environment information (there is a default value). All you need to do is run the following command in the command prompt:
-
-```bash
-py -3 -m pip install virtualenvwrapper-win
-```
-
-Now you can create a new virtual environment with the `mkvirtualenv` command
-
-### Creating a virtual environment
-
-Once you've installed _virtualenvwrapper_ or _virtualenvwrapper-win_ then working with virtual environments is very similar on all platforms.
-
-Now you can create a new virtual environment with the `mkvirtualenv` command. As this command runs you'll see the environment being set up (what you see is slightly platform-specific). When the command completes the new virtual environment will be active — you can see this because the start of the prompt will be the name of the environment in parentheses (below we show this for Ubuntu, but the final line is similar for Windows/macOS).
-
-```bash
-mkvirtualenv my_django_environment
-```
-
-You should see output similar to the following:
-
-```plain
-Running virtualenv with interpreter /usr/bin/python3
-# …
-virtualenvwrapper.user_scripts creating /home/ubuntu/.virtualenvs/t_env7/bin/get_env_details
-(my_django_environment) ubuntu@ubuntu:~$
-```
-
-Now you're inside the virtual environment you can install Django and start developing.
-
-> [!NOTE]
-> From now on in this article (and indeed the module) please assume that any commands are run within a Python virtual environment like the one we set up above.
+       ```bash
+       ~/dev/venv-all/django-mdn/Scripts/activate.bat
+       ```
 
 ### Using a virtual environment
 
 There are just a few other useful commands that you should know (there are more in the tool documentation, but these are the ones you'll use regularly):
 
 - `deactivate` — Exit out of the current Python virtual environment
-- `workon` — List available virtual environments
-- `workon name_of_environment` — Activate the specified Python virtual environment
-- `rmvirtualenv name_of_environment` — Remove the specified environment.
 
 ## Installing Django
 
-Once you've created a virtual environment, and called `workon` to enter it, you can use _pip3_ to install Django.
+Once you've created a virtual environment, and "entered it" by running the activate script, you can use _pip3_ to install Django.
 
 ```bash
-# Linux/macOS
-python3 -m pip install django~=4.2
-
-# Windows
-py -3 -m pip install django~=4.2
+pip install django~=5.1
 ```
 
 You can test that Django is installed by running the following command (this just tests that Python can find the Django module):
@@ -383,6 +283,9 @@ python3 -m django --version
 # Windows
 py -3 -m django --version
 ```
+
+> [!NOTE]
+> can you not use the non-windows command on windows?
 
 > [!NOTE]
 > If the above Windows command does not show a django module present, try:
@@ -427,7 +330,7 @@ In addition to branches, it is possible to create `tags` on any branch and later
 ### Create an account and repository on GitHub
 
 First we will create a free account on GitHub.
-With a free account you can't create private repos, but you can create as many _public_ repositories ("repos") as you like.
+With a free account you can create as many repositories ("repos") as you like.
 Then we create and configure a repository named "django_local_library" for storing the [Local library website](/en-US/docs/Learn_web_development/Extensions/Server-side/Django/Tutorial_local_library_website) as we evolve it in the rest of this tutorial.
 
 The steps are:
